@@ -21,9 +21,10 @@ async function getCurrentUser(token: string) {
   const data = jwt.verify(token, SecretCode);
   const user = await prisma.user.findUnique({
     //@ts-ignore
-    where: { email: data.email },
+    where: { id : data.id },
     include: { offers: true },
   });
+  return user
 }
 
 function getToken(id: number) {
@@ -36,6 +37,7 @@ app.get("/users", async (req, res) => {
   const users = await prisma.user.findMany({
     include: { offers: true },
   });
+  res.send(users)
 });
 
 app.post("/sign-in", async (req, res) => {
@@ -45,16 +47,17 @@ app.post("/sign-in", async (req, res) => {
   };
   try {
     const user = await prisma.user.findUnique({
-      where: { email: req.body.email },
+      where: { email: data.email },
     });
     if (user && bcrypt.compareSync(data.password, user.password)) {
       res.send({ user: user, token: getToken(user.id) });
     } else {
       res
-        .status(400)
+        .status(404)
         .send({ error: "The email/password you entered is wrong!" });
     }
   } catch (error) {
+    //@ts-ignore
     res.status(404).send({ error: error.message });
   }
 });
@@ -84,6 +87,7 @@ app.post("/sign-up", async (req, res) => {
 
     res.send({ user: user, token: getToken(user.id) });
   } catch (error) {
+    //@ts-ignore
     res.status(404).send({ error: error.message });
   }
 });
@@ -96,6 +100,7 @@ app.get("/validate", async (req, res) => {
       res.send({ user: user, token: getToken(user.id) });
     }
   } catch (error) {
+    //@ts-ignore
     res.status(400).send({ error: error.message });
   }
 });
@@ -107,9 +112,15 @@ app.get("/offers", async (req, res) => {
     //@ts-ignore
     res.send(user.offers);
   } catch (error) {
+    //@ts-ignore
     res.status(400).send({ error: error.message });
   }
 });
+
+app.get("/all-offers" , async (req,res) => {
+    const offers = await prisma.offer.findMany({})
+    res.send(offers)
+})
 
 app.listen(port, () => {
   console.log(`App running: http:/localhost:${port}`);
