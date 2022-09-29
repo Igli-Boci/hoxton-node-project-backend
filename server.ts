@@ -15,16 +15,16 @@ const prisma = new PrismaClient();
 
 const SecretCode = process.env.SecretCode!;
 
-const port = 3001;
+const port = 3010;
 
 async function getCurrentUser(token: string) {
   const data = jwt.verify(token, SecretCode);
   const user = await prisma.user.findUnique({
     //@ts-ignore
-    where: { id : data.id },
+    where: { id: data.id },
     include: { offers: true },
   });
-  return user
+  return user;
 }
 
 function getToken(id: number) {
@@ -37,7 +37,7 @@ app.get("/users", async (req, res) => {
   const users = await prisma.user.findMany({
     include: { offers: true },
   });
-  res.send(users)
+  res.send(users);
 });
 
 app.post("/sign-in", async (req, res) => {
@@ -117,10 +117,10 @@ app.get("/offers", async (req, res) => {
   }
 });
 
-app.get("/all-offers" , async (req,res) => {
-    const offers = await prisma.offer.findMany({})
-    res.send(offers)
-})
+app.get("/all-offers", async (req, res) => {
+  const offers = await prisma.offer.findMany({});
+  res.send(offers);
+});
 
 app.listen(port, () => {
   console.log(`App running: http:/localhost:${port}`);

@@ -28,6 +28,7 @@ model Offer {
   mb       String
   sms      String
   duration String
+  icon     String @default("")
   User     User?  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId   Int?
 }
