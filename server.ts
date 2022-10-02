@@ -13,6 +13,8 @@ app.use(express.json());
 
 const prisma = new PrismaClient();
 
+
+
 const SecretCode = process.env.SecretCode!;
 
 const port = 3010;
@@ -111,6 +113,18 @@ app.get("/offers", async (req, res) => {
     const user = await getCurrentUser(req.headers.authorization);
     //@ts-ignore
     res.send(user.offers);
+  } catch (error) {
+    //@ts-ignore
+    res.status(400).send({ error: error.message });
+  }
+});
+
+app.get("/offer/:name", async (req, res) => {
+  try {
+    const offer = await prisma.offer.findUnique({
+      where : {name : req.params.name}
+    })
+    res.send(offer)
   } catch (error) {
     //@ts-ignore
     res.status(400).send({ error: error.message });

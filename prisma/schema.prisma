@@ -16,7 +16,7 @@ model User {
   email    String  @unique
   number   String  @unique
   password String
-  balance  String  @default("0")
+  balance  String  @default("100")
   offers   Offer[]
 }
 
