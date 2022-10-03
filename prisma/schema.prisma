@@ -21,7 +21,7 @@ model User {
 }
 
 model Offer {
-  id       Int
+  id       Int    
   name     String @unique
   price    String
   minuts   String

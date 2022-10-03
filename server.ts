@@ -140,6 +140,24 @@ app.get("/offer/:name", async (req, res) => {
   }
 });
 
+app.post("/offer", async (req, res) => {
+  try {
+    const existingOffer = await prisma.offer.findUnique({
+      where: { name: req.body.name },
+    });
+    
+
+    if (existingOffer) {
+      const newoffer = await prisma.offer.create({
+        data: existingOffer,
+      });
+    }
+
+  } catch (error) {
+    res.send(error);
+  }
+});
+
 app.get("/all-offers", async (req, res) => {
   const offers = await prisma.offer.findMany({});
   res.send(offers);
