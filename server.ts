@@ -13,8 +13,6 @@ app.use(express.json());
 
 const prisma = new PrismaClient();
 
-
-
 const SecretCode = process.env.SecretCode!;
 
 const port = 3010;
@@ -31,7 +29,7 @@ async function getCurrentUser(token: string) {
 
 function getToken(id: number) {
   return jwt.sign({ id: id }, SecretCode, {
-    expiresIn: "1 day",
+    expiresIn: "24h",
   });
 }
 
@@ -119,12 +117,23 @@ app.get("/offers", async (req, res) => {
   }
 });
 
+app.get("/user", async (req, res) => {
+  try {
+    //@ts-ignore
+    const user = await getCurrentUser(req.headers.authorization);
+    //@ts-ignore
+    res.send(user);
+  } catch (error) {
+    //@ts-ignore
+    res.status(400).send({ error: error.message });
+  }
+});
 app.get("/offer/:name", async (req, res) => {
   try {
     const offer = await prisma.offer.findUnique({
-      where : {name : req.params.name}
-    })
-    res.send(offer)
+      where: { name: req.params.name },
+    });
+    res.send(offer);
   } catch (error) {
     //@ts-ignore
     res.status(400).send({ error: error.message });
